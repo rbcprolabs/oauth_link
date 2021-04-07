@@ -1,4 +1,4 @@
-package com.example.oauth_link
+package io.scer.oauth_link
 
 import android.app.Activity
 import android.content.Intent
@@ -12,29 +12,20 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
-import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /** OauthLinkPlugin */
 class OauthLinkPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, PluginRegistry.NewIntentListener {
   private var mActivity: Activity? = null
-  private var methodChannel: MethodChannel? = null
   private var appScheme: String? = null
+  private lateinit var channel : MethodChannel
 
-  constructor() {}
-
-  constructor(activity: Activity, channel: MethodChannel) {
-    mActivity = activity
-    methodChannel = channel
+  override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "oauth_link")
+    channel.setMethodCallHandler(this)
   }
 
-  companion object {
-    @JvmStatic
-    fun registerWith(registrar: Registrar) {
-      val channel = MethodChannel(registrar.messenger(), "oauth_link");
-      val plugin = OauthLinkPlugin(registrar.activity(), channel)
-      registrar.addNewIntentListener(plugin)
-      channel.setMethodCallHandler(plugin)
-    }
+  override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    channel.setMethodCallHandler(null)
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -48,23 +39,14 @@ class OauthLinkPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, PluginRe
 
   override fun onNewIntent(intent: Intent?): Boolean {
     if (intent?.data is Uri && appScheme != null) {
-      var dataUri = intent?.data as Uri
+      val dataUri = intent.data as Uri
       if (dataUri.scheme == appScheme) {
-        methodChannel?.invokeMethod("onLinkSuccess", dataUri.toString())
+        channel.invokeMethod("onLinkSuccess", dataUri.toString())
         return false
       }
     }
 
     return true
-  }
-
-  override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    methodChannel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, "oauth_link")
-    methodChannel?.setMethodCallHandler(this);
-  }
-
-  override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-    methodChannel?.setMethodCallHandler(null)
   }
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {

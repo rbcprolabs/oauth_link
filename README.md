@@ -1,6 +1,6 @@
 # oauth_link
 
-A new flutter plugin project.
+Oauth scheme handling on ios & android
 
 ## Getting Started
 

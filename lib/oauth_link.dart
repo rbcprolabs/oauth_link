@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-typedef OnLinkSuccessCallback = Future<dynamic> Function(String link);
+typedef OnLinkSuccessCallback = Future<dynamic> Function(String? link);
 
 class OAuthLink {
   OAuthLink._();
@@ -10,9 +10,9 @@ class OAuthLink {
   static final OAuthLink instance = OAuthLink._();
   static const MethodChannel _channel = MethodChannel('oauth_link');
 
-  OnLinkSuccessCallback _onLinkSuccess;
+  OnLinkSuccessCallback? _onLinkSuccess;
 
-  void onLink({String appScheme, OnLinkSuccessCallback onSuccess}) {
+  void onLink({String? appScheme, OnLinkSuccessCallback? onSuccess}) {
     _onLinkSuccess = onSuccess;
     _channel
       ..invokeMethod('setScheme', appScheme)
@@ -23,7 +23,7 @@ class OAuthLink {
     debugPrint('OauthLink: $call');
     switch (call.method) {
       case 'onLinkSuccess':
-        return _onLinkSuccess(call.arguments);
+        return _onLinkSuccess!(call.arguments);
     }
   }
 }

@@ -1,0 +1,18 @@
+name: oauth_link_example
+description: Demonstrates how to use the oauth_link plugin.
+version: 1.0.0+1
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  oauth_link:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
